@@ -13,6 +13,9 @@ app.get('/home', (req, res) => {
 app.get('/login', (req, res) => {
     res.send("Página login");
 });
+app.get('/login', (req, res) => {
+    res.send("Página login");
+});
 
 app.listen(port, () => {
     console.log('Servidor rodando na porta', port)
