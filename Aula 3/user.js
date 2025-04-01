@@ -3,7 +3,7 @@ class user{
         this.id = id;
         this.nome = nome;
         this.email = email;
-        this.endereco = enredeco;
+        this.endereco = endereco;
         this.senha = senha;
         this.telefone = telefone;
         this.cpf = cpf;

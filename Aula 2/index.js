@@ -1,10 +1,11 @@
 //clase base usuario
 class usuario {
 
-    constructor(nome, email, senha) {
+    constructor(nome, email, senha, endereco) {
         this.nome = nome;
         this.email = email;
         this._senha = senha;//atributo privado
+        this._endereco = endereco;
     }
 
     autenticar(senha) {
