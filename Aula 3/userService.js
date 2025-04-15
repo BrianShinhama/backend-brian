@@ -2,9 +2,11 @@ const User = require("./user")
 const path = require("path") //modulo para manipular caminhos
 const fs = require("fs")// modulo para manipular arquivos file system
 const bcrypt = require("bcryptjs")// modulo para criptografar senha
+const mysql = require("./mysql");
+
 
 class userService {
-    constructor() { //quando não passa parâmetro traz um valor fixo, que não muda
+    constructor() { //quando não passa parâmetro traz um valor fixo
         this.filePath = path.join(__dirname, 'user.json')
         this.users = this.loadUsers()
         this.nextID = this.getNextId()
@@ -19,10 +21,10 @@ class userService {
         } catch (erro) {
             console.log("Erro ao carregar arquivo", erro)
         }
-        return [] //retorna um array vazio
+        return [] //retorna um array com nada
     }
 
-    getNextId(users) { //função para buscar próximo id
+    getNextId(users) { //função pra buscar o id
         try {
             if (this.users.length === 0) return 1
             return Math.max(...this.users.map(user => user.id)) + 1
@@ -31,7 +33,7 @@ class userService {
         }
     }
 
-    saveUsers() { //função para salvar os usuários
+    saveUsers() { //função para salvar usuario
         try {
             fs.writeFileSync(this.filePath, JSON.stringify(this.users))
         } catch (erro) {
@@ -41,18 +43,16 @@ class userService {
 
     async addUser(nome, email, senha, endereco, telefone, cpf) {
         try {
-            const emailexiste = this.users.some(user => user.email === email) //verifica se o email já existe
-            if (emailexiste) {
-                throw new Error("Email já cadastrado") //se o email já existir, vai dar erro
-            }
             const senhaCripto = await bcrypt.hash(senha, 10)
-            const user = new User(this.nextID++, nome, email, senhaCripto, endereco, telefone, cpf)  //cria novo user, e o novoid++ é pra toda vez aumentar um no id
-            this.users.push(user) //da um push pra armazenar esse user no array de usuarios
-            this.saveUsers()
-            return user
-        } catch (erro) {
-            console.log("Erro ao adicionar usuário", erro)
-            throw erro
+            const resultados = await mysql.execute(
+                `INSERT INTO usuários(nome, email, endereço, cpf,  telefone, senha)
+                      VALUES (?, ?, ?, ?, ?, ?, ?);`,
+                      [nome, email, endereco, cpf, telefone, senhaCripto]
+            )
+            return resultados
+        } catch (error) {
+            console.log("Erro ao adicionar usuário", error)
+            throw error
         }
     }
     getUsers() {
@@ -78,9 +78,9 @@ class userService {
             const user = this.users.find(user => user.id == id);
             if (!user) throw new Error("Usuário não encontrado");
             if (email !== user.email) {
-                const emailexiste = this.users.some(user => user.email === email) //verifica se o email já existe
+                const emailexiste = this.users.some(user => user.email === email)
                 if (emailexiste) {
-                    throw new Error("Email já cadastrado") //se o email já existir, vai dar erro
+                    throw new Error("Email já cadastrado")
                 }
             }
             user.nome = nome;

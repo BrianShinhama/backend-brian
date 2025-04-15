@@ -18,7 +18,7 @@ USE `mydb` ;
 -- Table `mydb`.`Usuários`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Usuários` (
-  `idUsuários` INT NULL AUTO_INCREMENT,
+  `idUsuários` INT NOT NULL AUTO_INCREMENT,
   `Nome` VARCHAR(45) NOT NULL,
   `Senha` VARCHAR(45) NOT NULL,
   `Email` VARCHAR(45) NOT NULL,
